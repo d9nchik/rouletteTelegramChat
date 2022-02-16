@@ -28,6 +28,30 @@ Main points:
 **Notice**
 We collect messages to provide platform without abuse, advertisement.
 
+## Data that we collect
+
+![Er diagram with 3 enteties](./docs/ER.png)
+
+### User
+
+- chat_id
+- username
+- fake identity
+
+### Role
+
+- name (for now 'admin' and 'user')
+
+### Logs
+
+- message (who send, and who received)
+- date (when message was send)
+
+### Indexes
+
+- on chat_id (it will be unique)
+- logs ON date send and person who send or receive
+
 ## We will ban you if you provide:
 
 - porn 🔞
