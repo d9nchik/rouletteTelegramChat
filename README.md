@@ -60,3 +60,32 @@ We collect messages to provide platform without abuse, advertisement.
 - information that break copyright law (or any of it analogue) ©
 - advertisement
 - and staff that can violate law
+
+## Scenario of usage
+
+- `/start` - user get a random identity and get fake identity, status of searching is false
+- `/find_companion` - user status of searching set to true. If match will be found user will get message with companion identity
+- `/stop` - user stop communication with companion (or searching companion), status of searching is false
+- `/my_identity` - user get his identity (name, age, hobbies, favorite films)
+- `/companion_identity` - get companion identity (name, age, hobbies, favorite films). If not in conversation get err message.
+- `/randomIdentity` - user sets random name, age. Hobbies and favorite films will be empty
+- `/set_name {name}` - set name
+- `/set_age {age}` - set age (can be number or word)
+- `/set_hobbies {hobbies}` - string of hobbies
+- `/set_films {favorite films}` - set favorite films
+- `/block` - person will be added to blacklist. current conversation will e stopped.
+- `/report` - report companion. (The same affect as `block` command + admin can give permanent ban for violation rules )
+- `{any message}` - if person in conversation will be sent to companion
+
+### Admin commands:
+
+- `/ban {user_id}` - give a permanent ban for person. Banned person will be kicked off any present conversation and will get `You're banned` for any command
+- `/user_logs {user_id}` - get logs for user as a txt file
+
+## Admin automation
+
+Before sending messages to admin, they will be send to sentiment analyzer engine. If your text will be evaluated as abuse, you will get ban without calling admin.
+
+### Sentiment analyzer:
+
+We will use Node.JS [sentiment library](https://github.com/thisandagain/sentiment). Scores lower than -3 will earn ban
