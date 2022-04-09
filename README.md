@@ -89,3 +89,9 @@ Before sending messages to admin, they will be send to sentiment analyzer engine
 ### Sentiment analyzer:
 
 We will use Node.JS [sentiment library](https://github.com/thisandagain/sentiment). Scores lower than -3 will earn ban
+
+## Development
+
+### Migrations
+
+To apply migrations you need to run `npm run migrate` with [migrate previously](https://github.com/golang-migrate/migrate/tree/master/cmd/migrate#installation)
