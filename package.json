@@ -1,0 +1,31 @@
+{
+  "name": "roulettetelegramchat",
+  "version": "1.0.0",
+  "description": "Roulette telegram bot",
+  "main": "index.ts",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "apply-migration": "migrate -path migrations -database postgres://postgres:mysecretpassword@localhost:5432/postgres?sslmode=disable up"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/d9nchik/rouletteTelegramChat.git"
+  },
+  "keywords": [
+    "telegram",
+    "tg",
+    "bot",
+    "chat",
+    "roulette",
+    "conversation"
+  ],
+  "author": "d9nich",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/d9nchik/rouletteTelegramChat/issues"
+  },
+  "homepage": "https://github.com/d9nchik/rouletteTelegramChat#readme"
+}
