@@ -94,4 +94,9 @@ We will use Node.JS [sentiment library](https://github.com/thisandagain/sentimen
 
 ### Migrations
 
-To apply migrations you need to run `npm run migrate` with [migrate previously](https://github.com/golang-migrate/migrate/tree/master/cmd/migrate#installation)
+To apply migrations you need to run 
+```bash
+migrate -path migrations -database postgres://$LOGIN:$PASSWORD@localhost:5432/postgres?sslmode=disable up
+```
+ 
+with [migrate previously installed](https://github.com/golang-migrate/migrate/tree/master/cmd/migrate#installation)
