@@ -7,5 +7,3 @@ services:
     environment:
       POSTGRES_PASSWORD: 'mysecretpassword'
       POSTGRES_USER: 'postgres'
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
