@@ -7,8 +7,7 @@
     "doc": "docs"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "apply-migration": "migrate -path migrations -database postgres://postgres:mysecretpassword@localhost:5432/postgres?sslmode=disable up"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
