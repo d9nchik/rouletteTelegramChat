@@ -7,7 +7,13 @@
     "doc": "docs"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "format": "prettier --write .",
+    "format:stage": "pretty-quick --staged",
+    "check-format": "prettier --check .",
+    "prepare": "husky install",
+    "lint": "eslint \"**/*.{t,j}s{x,}\"",
+    "lint:write": "eslint --debug src/ --fix"
   },
   "repository": {
     "type": "git",
@@ -26,5 +32,15 @@
   "bugs": {
     "url": "https://github.com/d9nchik/rouletteTelegramChat/issues"
   },
-  "homepage": "https://github.com/d9nchik/rouletteTelegramChat#readme"
+  "homepage": "https://github.com/d9nchik/rouletteTelegramChat#readme",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.19.0",
+    "@typescript-eslint/parser": "^5.19.0",
+    "eslint": "^8.13.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-sonarjs": "^0.13.0",
+    "husky": "^7.0.4",
+    "lint-staged": "^12.3.8",
+    "prettier": "2.6.2"
+  }
 }
