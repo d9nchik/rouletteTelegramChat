@@ -8,7 +8,7 @@ create table users
     id        serial
         constraint user_pk
             primary key,
-    chat_id   int                     not null,
+    chat_id   VARCHAR(20)             not null,
     username  VARCHAR(70)             not null,
     fake_name VARCHAR(70)             not null,
     age       int                     not null,
