@@ -4,6 +4,7 @@ import {
   getUserByID,
   setName,
   setHobbies,
+  setFilms,
 } from '../store/user';
 import { CreateUser } from '../types/user';
 import {
@@ -44,11 +45,11 @@ export const getUserStatus = async (user: CreateUser): Promise<string> => {
     return 'User not found';
   }
 
-  return `Fake name: ${userData.fakeName}\nAge: ${userData.age}\nHobbies: ${
-    userData.hobbies ? userData.hobbies : 'Not set'
-  }\nFilms: ${userData.films ? userData.films : 'Not set'}\nIn search: ${
-    userData.isSearching ? '✅' : '❌'
-  }`;
+  return `Fake name🎭: ${userData.fakeName}\nAge👴: ${
+    userData.age
+  }\nHobbies⛱: ${userData.hobbies ?? 'Not set'}\nFilms🎥: ${
+    userData.films ?? 'Not set'
+  }\nIn search🔎: ${userData.isSearching ? '✅' : '❌'}`;
 };
 
 export const setUserName = async (user: CreateUser): Promise<boolean> => {
@@ -70,4 +71,16 @@ export const updateHobbies = async (
   }
 
   return setHobbies(userID, hobbies);
+};
+
+export const updateFilms = async (
+  user: CreateUser,
+  films: string
+): Promise<boolean> => {
+  const userID = await getUserID(user);
+  if (!userID) {
+    return false;
+  }
+
+  return setFilms(userID, films);
 };
