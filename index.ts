@@ -10,6 +10,7 @@ import {
   updateHobbies,
   updateFilms,
   updateAge,
+  randomIdentity,
 } from './src/core/user';
 import { CreateUser } from './src/types/user';
 
@@ -103,6 +104,14 @@ bot.command('set_age', async ctx =>
         ? `Your age has been set to *${user.age}*`
         : `Sorry, I couldn't set your age.`;
     })
+  )
+);
+
+bot.command('random_identity', async ctx =>
+  ctx.replyWithMarkdown(
+    await insureChatIsPrivate(ctx.chat, chat =>
+      randomIdentity(getCreateUser(chat))
+    )
   )
 );
 
