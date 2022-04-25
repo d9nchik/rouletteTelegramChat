@@ -5,15 +5,16 @@ CREATE TYPE role AS enum ('admin', 'banned');
 -- Table users
 create table users
 (
-    id        serial
+    id           serial
         constraint user_pk
             primary key,
-    chat_id   VARCHAR(20)             not null,
-    username  VARCHAR(70)             not null,
-    fake_name VARCHAR(70)             not null,
-    age       int                     not null,
-    hobbies   VARCHAR(100) default '' not null,
-    films     VARCHAR(100) default '' not null
+    chat_id      VARCHAR(20)             not null,
+    username     VARCHAR(70)             not null,
+    fake_name    VARCHAR(70)             not null,
+    age          int                     not null,
+    hobbies      VARCHAR(100) default '' not null,
+    films        VARCHAR(100) default '' not null,
+    is_searching boolean      default false not null
 );
 
 create unique index user_chat_id_uindex

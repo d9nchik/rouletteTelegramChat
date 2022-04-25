@@ -1,7 +1,7 @@
 begin;
 drop table user_roles cascade;
 
-drop table role cascade;
+DROP TYPE role;
 
 drop table block_list cascade;
 
