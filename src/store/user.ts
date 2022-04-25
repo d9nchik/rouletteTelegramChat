@@ -92,3 +92,15 @@ export async function setHobbies(
     return false;
   }
 }
+
+export async function setFilms(
+  userID: number,
+  films: string
+): Promise<boolean> {
+  try {
+    await pool.query('UPDATE users SET films=$1 WHERE id=$2;', [films, userID]);
+    return true;
+  } catch {
+    return false;
+  }
+}
