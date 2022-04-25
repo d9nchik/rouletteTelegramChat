@@ -7,6 +7,7 @@ import {
   getUserID,
   getUserStatus,
   setUserName,
+  updateHobbies,
 } from './src/core/user';
 import { CreateUser } from './src/types/user';
 
@@ -43,6 +44,25 @@ bot.command('set_name', async ctx =>
       return (await setUserName(user))
         ? `Your name has been set to *${user.fakeName}*`
         : `Sorry, I couldn't set your name.`;
+    })
+  )
+);
+
+bot.command('set_hobbies', async ctx =>
+  ctx.replyWithMarkdown(
+    await insureChatIsPrivate(ctx.chat, async chat => {
+      const parts = ctx.message.text.split(' ');
+      if (parts.length == 1) {
+        return `Usage: \`/set_hobbies <hobbies>\``;
+      }
+
+      const user = getCreateUser(chat);
+      parts.shift();
+      const hobbies = parts.join(' ');
+
+      return (await updateHobbies(user, hobbies))
+        ? `Your hobbies has been set to *${hobbies}*`
+        : `Sorry, I couldn't set your hobbies.`;
     })
   )
 );
