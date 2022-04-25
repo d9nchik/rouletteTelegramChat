@@ -11,7 +11,7 @@ create table users
     chat_id      VARCHAR(20)             not null,
     username     VARCHAR(70)             not null,
     fake_name    VARCHAR(70)             not null,
-    age          int                     not null,
+    age          smallint                not null,
     hobbies      VARCHAR(100) default '' not null,
     films        VARCHAR(100) default '' not null,
     is_searching boolean      default false not null
