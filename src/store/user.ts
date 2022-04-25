@@ -17,7 +17,7 @@ export async function createUser({
   try {
     const res = await pool.query(
       `INSERT INTO users (chat_id, username, fake_name, age)
-       VALUES ($1, $2, $3, $4)`,
+       VALUES ($1, $2, $3, $4) RETURNING id`,
       [chatID, userName, fakeName, age]
     );
     return res.rows[0].id;
@@ -70,6 +70,21 @@ export async function setName(userID: number, name: string): Promise<boolean> {
   try {
     await pool.query('UPDATE users SET fake_name=$1 WHERE id=$2;', [
       name,
+      userID,
+    ]);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export async function setHobbies(
+  userID: number,
+  hobbies: string
+): Promise<boolean> {
+  try {
+    await pool.query('UPDATE users SET hobbies=$1 WHERE id=$2;', [
+      hobbies,
       userID,
     ]);
     return true;

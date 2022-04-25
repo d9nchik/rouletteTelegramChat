@@ -3,6 +3,7 @@ import {
   createUser,
   getUserByID,
   setName,
+  setHobbies,
 } from '../store/user';
 import { CreateUser } from '../types/user';
 import {
@@ -57,4 +58,16 @@ export const setUserName = async (user: CreateUser): Promise<boolean> => {
   }
 
   return setName(userID, user.fakeName);
+};
+
+export const updateHobbies = async (
+  user: CreateUser,
+  hobbies: string
+): Promise<boolean> => {
+  const userID = await getUserID(user);
+  if (!userID) {
+    return false;
+  }
+
+  return setHobbies(userID, hobbies);
 };
