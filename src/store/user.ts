@@ -65,3 +65,15 @@ export async function getUserByID(userID: number): Promise<User | null> {
     return null;
   }
 }
+
+export async function setName(userID: number, name: string): Promise<boolean> {
+  try {
+    await pool.query('UPDATE users SET fake_name=$1 WHERE id=$2;', [
+      name,
+      userID,
+    ]);
+    return true;
+  } catch {
+    return false;
+  }
+}

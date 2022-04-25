@@ -1,4 +1,9 @@
-import { getUserIDByChatId, createUser, getUserByID } from '../store/user';
+import {
+  getUserIDByChatId,
+  createUser,
+  getUserByID,
+  setName,
+} from '../store/user';
 import { CreateUser } from '../types/user';
 import {
   uniqueNamesGenerator,
@@ -43,4 +48,13 @@ export const getUserStatus = async (user: CreateUser): Promise<string> => {
   }\nFilms: ${userData.films ? userData.films : 'Not set'}\nIn search: ${
     userData.isSearching ? '✅' : '❌'
   }`;
+};
+
+export const setUserName = async (user: CreateUser): Promise<boolean> => {
+  const userID = await getUserID(user);
+  if (!userID) {
+    return false;
+  }
+
+  return setName(userID, user.fakeName);
 };
