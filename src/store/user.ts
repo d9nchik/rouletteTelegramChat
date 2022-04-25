@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import { Pool } from 'pg';
-import { CreateUser } from '../types/user';
+import { CreateUser, User } from '../types/user';
 
 const pool = new Pool({
   connectionString:
@@ -38,6 +38,29 @@ export async function getUserIDByChatId(
       return null;
     }
     return res.rows[0].id;
+  } catch {
+    return null;
+  }
+}
+
+export async function getUserByID(userID: number): Promise<User | null> {
+  try {
+    const res = await pool.query('SELECT * FROM users WHERE id=$1;', [userID]);
+
+    if (res.rows.length === 0) {
+      return null;
+    }
+
+    return {
+      id: res.rows[0].id,
+      chatID: res.rows[0].chat_id,
+      userName: res.rows[0].username,
+      fakeName: res.rows[0].fake_name,
+      age: res.rows[0].age,
+      hobbies: res.rows[0].hobbies,
+      films: res.rows[0].films,
+      isSearching: res.rows[0].is_searching,
+    };
   } catch {
     return null;
   }
