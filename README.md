@@ -68,9 +68,9 @@ We collect messages to provide platform without abuse, advertisement.
 - `/stop` - user stop communication with companion (or searching companion), status of searching is false
 - `/my_identity` - user get his identity (name, age, hobbies, favorite films)
 - `/companion_identity` - get companion identity (name, age, hobbies, favorite films). If not in conversation get err message.
-- `/randomIdentity` - user sets random name, age. Hobbies and favorite films will be empty
+- `/random_identity` - user sets random name, age. Hobbies and favorite films will be empty
 - `/set_name {name}` - set name
-- `/set_age {age}` - set age (can be number or word)
+- `/set_age {age}` - set age (can be only number)
 - `/set_hobbies {hobbies}` - string of hobbies
 - `/set_films {favorite films}` - set favorite films
 - `/block` - person will be added to blacklist. current conversation will e stopped.

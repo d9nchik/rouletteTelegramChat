@@ -18,6 +18,14 @@ import {
   countries,
 } from 'unique-names-generator';
 
+const userNotFound = 'User not found';
+
+const customConfig: Config = {
+  dictionaries: [adjectives, colors, names, countries, animals],
+  separator: ' ',
+  length: 3,
+};
+
 export async function getUserID(user: CreateUser): Promise<number> {
   const userID = await getUserIDByChatId(user.chatID);
   if (userID) {
@@ -26,24 +34,18 @@ export async function getUserID(user: CreateUser): Promise<number> {
   return createUser(user);
 }
 
-const customConfig: Config = {
-  dictionaries: [adjectives, colors, names, countries, animals],
-  separator: ' ',
-  length: 3,
-};
-
 export const generateName = (): string => uniqueNamesGenerator(customConfig); // big donkey
 export const generateAge = (): number => Math.floor(Math.random() * 30) + 18;
 
 export const getUserStatus = async (user: CreateUser): Promise<string> => {
   const userID = await getUserID(user);
   if (!userID) {
-    return 'User not found';
+    return userNotFound;
   }
 
   const userData = await getUserByID(userID);
   if (!userData) {
-    return 'User not found';
+    return userNotFound;
   }
 
   return `Fake name🎭: ${userData.fakeName}\nAge👴: ${
@@ -93,4 +95,20 @@ export const updateAge = async (user: CreateUser): Promise<boolean> => {
   }
 
   return setAge(userID, user.age);
+};
+
+export const randomIdentity = async (user: CreateUser): Promise<string> => {
+  const userID = await getUserID(user);
+  if (!userID) {
+    return userNotFound;
+  }
+  try {
+    await setAge(userID, generateAge());
+    await setName(userID, generateName());
+    await setHobbies(userID, '');
+    await setFilms(userID, '');
+    return 'Identity updated';
+  } catch {
+    return 'Error';
+  }
 };
