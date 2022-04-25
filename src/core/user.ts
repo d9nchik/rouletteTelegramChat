@@ -5,6 +5,7 @@ import {
   setName,
   setHobbies,
   setFilms,
+  setAge,
 } from '../store/user';
 import { CreateUser } from '../types/user';
 import {
@@ -83,4 +84,13 @@ export const updateFilms = async (
   }
 
   return setFilms(userID, films);
+};
+
+export const updateAge = async (user: CreateUser): Promise<boolean> => {
+  const userID = await getUserID(user);
+  if (!userID) {
+    return false;
+  }
+
+  return setAge(userID, user.age);
 };
