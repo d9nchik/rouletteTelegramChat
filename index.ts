@@ -6,6 +6,7 @@ import {
   generateName,
   getUserID,
   getUserStatus,
+  setUserName,
 } from './src/core/user';
 import { CreateUser } from './src/types/user';
 
@@ -25,6 +26,24 @@ bot.command('my_identity', async ctx =>
     await insureChatIsPrivate(ctx.chat, chat =>
       getUserStatus(getCreateUser(chat))
     )
+  )
+);
+
+bot.command('set_name', async ctx =>
+  ctx.replyWithMarkdown(
+    await insureChatIsPrivate(ctx.chat, async chat => {
+      const parts = ctx.message.text.split(' ');
+      if (parts.length != 2) {
+        return `Usage: \`/set_name <name>\``;
+      }
+
+      const user = getCreateUser(chat);
+      user.fakeName = parts[1];
+
+      return (await setUserName(user))
+        ? `Your name has been set to *${user.fakeName}*`
+        : `Sorry, I couldn't set your name.`;
+    })
   )
 );
 
@@ -51,7 +70,7 @@ async function insureChatIsPrivate(
 function getCreateUser(chat: Chat.PrivateChat): CreateUser {
   return {
     chatID: chat.id,
-    userName: chat.username ? chat.username : '',
+    userName: chat.username ?? '',
     fakeName: generateName(),
     age: generateAge(),
   };
