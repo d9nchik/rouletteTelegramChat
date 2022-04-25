@@ -9,6 +9,7 @@ import {
   setUserName,
   updateHobbies,
   updateFilms,
+  updateAge,
 } from './src/core/user';
 import { CreateUser } from './src/types/user';
 
@@ -83,6 +84,24 @@ bot.command('set_films', async ctx =>
       return (await updateFilms(user, films))
         ? `Your films🎥 has been set to *${films}*`
         : `Sorry, I couldn't set your films.`;
+    })
+  )
+);
+
+bot.command('set_age', async ctx =>
+  ctx.replyWithMarkdown(
+    await insureChatIsPrivate(ctx.chat, async chat => {
+      const parts = ctx.message.text.split(' ');
+      if (parts.length != 2 || Number.isNaN(Number(parts[1]))) {
+        return `Usage: \`/set_age <age>\``;
+      }
+
+      const user = getCreateUser(chat);
+      user.age = Number(parts[1]);
+
+      return (await updateAge(user))
+        ? `Your age has been set to *${user.age}*`
+        : `Sorry, I couldn't set your age.`;
     })
   )
 );

@@ -104,3 +104,12 @@ export async function setFilms(
     return false;
   }
 }
+
+export async function setAge(userID: number, age: number): Promise<boolean> {
+  try {
+    await pool.query('UPDATE users SET age=$1 WHERE id=$2;', [age, userID]);
+    return true;
+  } catch {
+    return false;
+  }
+}
