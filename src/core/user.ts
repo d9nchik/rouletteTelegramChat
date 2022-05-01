@@ -18,7 +18,7 @@ import {
   countries,
 } from 'unique-names-generator';
 
-const userNotFound = 'User not found';
+export const userNotFound = 'User not found';
 
 const customConfig: Config = {
   dictionaries: [adjectives, colors, names, countries, animals],

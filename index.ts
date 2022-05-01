@@ -12,6 +12,7 @@ import {
   updateAge,
   randomIdentity,
 } from './src/core/user';
+import { getCompanionIdentity } from './src/core/conversation';
 import { CreateUser } from './src/types/user';
 
 const token = process.env.BOT_TOKEN;
@@ -121,6 +122,13 @@ bot.command('random_identity', async ctx =>
   )
 );
 
+bot.command('companion_identity', async ctx =>
+  ctx.reply(
+    await insureChatIsPrivate(ctx.chat, chat =>
+      getCompanionIdentity(getCreateUser(chat))
+    )
+  )
+);
 bot.help(ctx => ctx.reply('Send me a sticker'));
 bot.on('sticker', ctx => ctx.reply('👍'));
 bot.hears('hi', ctx => ctx.reply('Hey there'));

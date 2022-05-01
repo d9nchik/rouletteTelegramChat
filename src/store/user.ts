@@ -1,12 +1,5 @@
-import 'dotenv/config';
-import { Pool } from 'pg';
 import { CreateUser, User } from '../types/user';
-
-const pool = new Pool({
-  connectionString:
-    process.env.DB_STRING ||
-    `postgresql://${process.env.POSTGRES_USER}:${process.env.POSTGRES_PASSWORD}@localhost:5432/postgres`,
-});
+import pool from '.';
 
 export async function createUser({
   chatID,
