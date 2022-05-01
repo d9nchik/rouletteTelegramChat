@@ -1,4 +1,4 @@
-import { CreateUser, User } from '../types/user';
+import { CreateUser, User, UserRole } from '../types/user';
 import pool from '.';
 
 export async function createUser({
@@ -112,5 +112,17 @@ export async function stopSearching(userID: number): Promise<boolean> {
     return true;
   } catch {
     return false;
+  }
+}
+
+export async function userRoles(userID: number): Promise<UserRole[]> {
+  try {
+    const res = await pool.query(
+      'SELECT assigned_role AS role FROM user_roles WHERE user_id=$1;',
+      [userID]
+    );
+    return res.rows.map(({ role }) => role);
+  } catch {
+    return [];
   }
 }

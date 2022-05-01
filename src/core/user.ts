@@ -6,8 +6,9 @@ import {
   setHobbies,
   setFilms,
   setAge,
+  userRoles,
 } from '../store/user';
-import { CreateUser } from '../types/user';
+import { CreateUser, UserRole } from '../types/user';
 import {
   uniqueNamesGenerator,
   Config,
@@ -111,4 +112,14 @@ export const randomIdentity = async (user: CreateUser): Promise<string> => {
   } catch {
     return 'Error';
   }
+};
+
+export const isUserBanned = async (user: CreateUser): Promise<boolean> => {
+  const userID = await getUserID(user);
+  if (!userID) {
+    return false;
+  }
+
+  const roles = await userRoles(userID);
+  return roles.includes(UserRole.banned);
 };
