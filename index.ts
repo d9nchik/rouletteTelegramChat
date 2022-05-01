@@ -14,7 +14,13 @@ import {
 } from './src/core/user';
 import { CreateUser } from './src/types/user';
 
-const bot = new Telegraf(process.env.BOT_TOKEN || '');
+const token = process.env.BOT_TOKEN;
+
+if (!token) {
+  throw new Error('No token provided');
+}
+
+const bot = new Telegraf(token);
 
 bot.start(async ctx =>
   ctx.reply(
