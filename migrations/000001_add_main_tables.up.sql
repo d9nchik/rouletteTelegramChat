@@ -57,6 +57,9 @@ create table conversation
             references users
 );
 
+create unique index conversation_sender_receiver_uindex
+    on conversation (sender, receiver) where is_ended = FALSE;
+
 CREATE INDEX ON conversation USING hash (sender);
 CREATE INDEX ON conversation USING hash (receiver);
 
