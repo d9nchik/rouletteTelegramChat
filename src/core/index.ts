@@ -29,6 +29,38 @@ function registerHandlersOnBot(bot: Telegraf<Context<Update>>) {
     )
   );
 
+  bot.command('help', async ctx =>
+    ctx.reply(
+      await insureChatIsPrivateAndUserIsNotBanned(
+        ctx.chat,
+        async () =>
+          `Commands:
+/help - show this message
+/find_companion - user status of searching set to true. If match will be found user will get message with companion identity
+/stop - user stop communication with companion (or searching companion), status of searching is false
+/my_identity - user get his identity (name, age, hobbies, favorite films)
+/set_name {name} - set your name
+/set_age {age} - set your age
+/set_hobbies {hobbies} - set your hobbies
+/set_films {films} - set your films
+/random_identity - generate random name and age. Hobbies and favorite films will be empty
+/set_favorite_film {favorite films} - set your favorite film
+/block - person will be added to blacklist. Current conversation will be stopped.
+/report - report companion. (The same affect as block command + admin can give permanent ban for violation rules)
+{any message} - if person in conversation will be sent to companion
+
+We will ban you if you provide:
+- porn 🔞
+- abuse 🔫
+- child porn 👶
+- information that break copyright law (or any of it analogue) ©
+- advertisement
+- and staff that can violate law
+`
+      )
+    )
+  );
+
   bot.command('my_identity', async ctx =>
     ctx.reply(
       await insureChatIsPrivateAndUserIsNotBannedWithCreateUser(
