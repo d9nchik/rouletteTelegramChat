@@ -25,8 +25,10 @@ create table user_roles
 (
     user_id       int
         constraint user_roles_users_id_fk
-            references users primary key,
-    assigned_role role
+            references users,
+    assigned_role role,
+    constraint user_roles_pk
+        primary key (user_id, assigned_role)
 );
 
 -- Table blocked

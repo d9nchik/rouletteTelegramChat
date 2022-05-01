@@ -11,8 +11,10 @@ import {
   updateFilms,
   updateAge,
   randomIdentity,
+  isUserBanned,
 } from './src/core/user';
 import { getCompanionIdentity, stop } from './src/core/conversation';
+import { ban } from './src/core/admin';
 import { CreateUser } from './src/types/user';
 
 const token = process.env.BOT_TOKEN;
@@ -25,7 +27,7 @@ const bot = new Telegraf(token);
 
 bot.start(async ctx =>
   ctx.reply(
-    await insureChatIsPrivate(ctx.chat, async chat => {
+    await insureChatIsPrivateAndUserIsNotBanned(ctx.chat, async chat => {
       await getUserID(getCreateUser(chat));
       return `Hi👋!`;
     })
@@ -34,7 +36,7 @@ bot.start(async ctx =>
 
 bot.command('my_identity', async ctx =>
   ctx.reply(
-    await insureChatIsPrivate(ctx.chat, chat =>
+    await insureChatIsPrivateAndUserIsNotBanned(ctx.chat, chat =>
       getUserStatus(getCreateUser(chat))
     )
   )
@@ -42,7 +44,7 @@ bot.command('my_identity', async ctx =>
 
 bot.command('set_name', async ctx =>
   ctx.replyWithMarkdown(
-    await insureChatIsPrivate(ctx.chat, async chat => {
+    await insureChatIsPrivateAndUserIsNotBanned(ctx.chat, async chat => {
       const parts = ctx.message.text.split(' ');
       if (parts.length != 2) {
         return `Usage: \`/set_name <name>\``;
@@ -60,7 +62,7 @@ bot.command('set_name', async ctx =>
 
 bot.command('set_hobbies', async ctx =>
   ctx.replyWithMarkdown(
-    await insureChatIsPrivate(ctx.chat, async chat => {
+    await insureChatIsPrivateAndUserIsNotBanned(ctx.chat, async chat => {
       const parts = ctx.message.text.split(' ');
       if (parts.length == 1) {
         return `Usage: \`/set_hobbies <hobbies>\``;
@@ -79,7 +81,7 @@ bot.command('set_hobbies', async ctx =>
 
 bot.command('set_films', async ctx =>
   ctx.replyWithMarkdown(
-    await insureChatIsPrivate(ctx.chat, async chat => {
+    await insureChatIsPrivateAndUserIsNotBanned(ctx.chat, async chat => {
       const parts = ctx.message.text.split(' ');
       if (parts.length == 1) {
         return `Usage: \`/set_films <films>\``;
@@ -98,7 +100,7 @@ bot.command('set_films', async ctx =>
 
 bot.command('set_age', async ctx =>
   ctx.replyWithMarkdown(
-    await insureChatIsPrivate(ctx.chat, async chat => {
+    await insureChatIsPrivateAndUserIsNotBanned(ctx.chat, async chat => {
       const parts = ctx.message.text.split(' ');
       if (parts.length != 2 || Number.isNaN(Number(parts[1]))) {
         return `Usage: \`/set_age <age>\``;
@@ -116,7 +118,7 @@ bot.command('set_age', async ctx =>
 
 bot.command('random_identity', async ctx =>
   ctx.replyWithMarkdown(
-    await insureChatIsPrivate(ctx.chat, chat =>
+    await insureChatIsPrivateAndUserIsNotBanned(ctx.chat, chat =>
       randomIdentity(getCreateUser(chat))
     )
   )
@@ -124,20 +126,34 @@ bot.command('random_identity', async ctx =>
 
 bot.command('companion_identity', async ctx =>
   ctx.reply(
-    await insureChatIsPrivate(ctx.chat, chat =>
+    await insureChatIsPrivateAndUserIsNotBanned(ctx.chat, chat =>
       getCompanionIdentity(getCreateUser(chat))
     )
   )
 );
 bot.command('stop', async ctx =>
   ctx.reply(
-    await insureChatIsPrivate(ctx.chat, chat => stop(getCreateUser(chat)))
+    await insureChatIsPrivateAndUserIsNotBanned(ctx.chat, chat =>
+      stop(getCreateUser(chat))
+    )
+  )
+);
+
+// Admin
+bot.command('ban', async ctx =>
+  ctx.replyWithMarkdown(
+    await insureChatIsPrivateAndUserIsNotBanned(ctx.chat, async chat => {
+      const parts = ctx.message.text.split(' ');
+      if (parts.length != 2 || Number.isNaN(Number(parts[1]))) {
+        return `Usage: \`/ban <user_id>\``;
+      }
+
+      return ban(getCreateUser(chat), Number(parts[1]));
+    })
   )
 );
 
 bot.help(ctx => ctx.reply('Send me a sticker'));
-bot.on('sticker', ctx => ctx.reply('👍'));
-bot.hears('hi', ctx => ctx.reply('Hey there'));
 bot.launch();
 
 // Enable graceful stop
@@ -163,3 +179,19 @@ function getCreateUser(chat: Chat.PrivateChat): CreateUser {
     age: generateAge(),
   };
 }
+
+async function checkIsUserBanned(
+  chat: Chat.PrivateChat,
+  fn: (chat: Chat.PrivateChat) => Promise<string>
+): Promise<string> {
+  if (await isUserBanned(getCreateUser(chat))) {
+    return `Sorry, you are banned.💀`;
+  }
+
+  return fn(chat);
+}
+
+const insureChatIsPrivateAndUserIsNotBanned = (
+  chat: Chat.PrivateChat | Chat.GroupChat | Chat.SupergroupChat,
+  fn: (chat: Chat.PrivateChat) => Promise<string>
+) => insureChatIsPrivate(chat, async chat => checkIsUserBanned(chat, fn));

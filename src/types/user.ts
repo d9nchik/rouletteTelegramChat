@@ -15,3 +15,8 @@ export interface User {
   films: string;
   isSearching: boolean;
 }
+
+export enum UserRole {
+  admin = 'admin',
+  banned = 'banned',
+}
