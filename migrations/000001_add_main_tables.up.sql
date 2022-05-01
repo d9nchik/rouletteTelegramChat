@@ -8,12 +8,12 @@ create table users
     id           serial
         constraint user_pk
             primary key,
-    chat_id      VARCHAR(20)             not null,
-    username     VARCHAR(70)             not null,
-    fake_name    VARCHAR(70)             not null,
-    age          smallint                not null,
-    hobbies      VARCHAR(100) default '' not null,
-    films        VARCHAR(100) default '' not null,
+    chat_id      VARCHAR(20)                not null,
+    username     VARCHAR(70)                not null,
+    fake_name    VARCHAR(70)                not null,
+    age          smallint                   not null,
+    hobbies      VARCHAR(100) default ''    not null,
+    films        VARCHAR(100) default ''    not null,
     is_searching boolean      default false not null
 );
 
@@ -50,20 +50,24 @@ create table conversation
     id       serial
         constraint conversation_pk
             primary key,
-    is_ended boolean default FALSE not null,
-    sender   int                   not null
-        constraint conversation_users_id_fk
-            references users,
-    receiver int                   not null
-        constraint conversation_users_id_fk_2
-            references users
+    is_ended boolean default FALSE not null
 );
 
-create unique index conversation_sender_receiver_uindex
-    on conversation (sender, receiver) where is_ended = FALSE;
+-- conversation_participants
+create table conversation_participants
+(
+    conversation_id int
+        constraint conversation_participants_conversation_id_fk
+            references conversation,
+    participant     int
+        constraint conversation_participants_users_id_fk
+            references users,
+    constraint conversation_participants_pk
+        primary key (conversation_id, participant)
+);
 
-CREATE INDEX ON conversation USING hash (sender);
-CREATE INDEX ON conversation USING hash (receiver);
+CREATE INDEX ON conversation_participants USING hash (conversation_id);
+CREATE INDEX ON conversation_participants USING hash (participant);
 
 -- Table logs
 create table logs
