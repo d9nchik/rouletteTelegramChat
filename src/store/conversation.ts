@@ -19,3 +19,15 @@ export const companionIdentity = async (
     return null;
   }
 };
+
+export const stopConversation = async (userID: number): Promise<boolean> => {
+  try {
+    await pool.query(
+      'UPDATE conversation SET is_ended = TRUE WHERE sender=$1 OR receiver=$1;',
+      [userID]
+    );
+    return true;
+  } catch {
+    return false;
+  }
+};
