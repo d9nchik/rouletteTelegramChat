@@ -103,3 +103,14 @@ export async function setAge(userID: number, age: number): Promise<boolean> {
     return false;
   }
 }
+
+export async function stopSearching(userID: number): Promise<boolean> {
+  try {
+    await pool.query('UPDATE users SET is_searching=FALSE WHERE id=$1;', [
+      userID,
+    ]);
+    return true;
+  } catch {
+    return false;
+  }
+}
