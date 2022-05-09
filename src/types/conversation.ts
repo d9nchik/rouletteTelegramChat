@@ -1,5 +1,5 @@
-export interface ConversationStart {
+export interface ConversationMessage {
   authorMessage: string;
-  participantChatID?: number;
+  participantChatID?: string;
   participantMessage?: string;
 }
