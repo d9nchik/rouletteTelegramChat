@@ -95,14 +95,14 @@ export async function startConversation(
 export async function findPartners(userID: number): Promise<number[]> {
   try {
     const res = await pool.query(
-      `SELECT users.id
+      `SELECT *
        FROM users
-                JOIN block_list bl on users.id = bl.blocked_user_id
+                LEFT JOIN block_list bl on users.id = bl.list_author
        WHERE is_searching
          AND users.id NOT IN (SELECT blocked_user_id
                               FROM block_list
-                              WHERE list_author = 1)
-         AND bl.blocked_user_id <> 1;`,
+                              WHERE list_author = $1)
+         AND (bl.blocked_user_id IS NULL OR bl.blocked_user_id <> $1)`,
       [userID]
     );
     return res.rows.map(row => row.id);

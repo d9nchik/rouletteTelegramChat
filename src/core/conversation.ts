@@ -35,7 +35,7 @@ export const getCompanionIdentity = async (
     userData.age
   }\nHobbies⛱: ${userData.hobbies ?? 'Not set'}\nFilms🎥: ${
     userData.films ?? 'Not set'
-  }\nIn search🔎: ${userData.isSearching ? '✅' : '❌'}`;
+  }`;
 };
 
 export const stop = async (user: CreateUser): Promise<ConversationMessage> => {
@@ -141,7 +141,7 @@ export const sendMessage = async (
   return {
     authorMessage: 'Delivered📩',
     participantMessage: message,
-    participantChatID: String(conversationChat),
+    participantChatID: partnerIdentity.chatID,
   };
 };
 
