@@ -1,10 +1,13 @@
 import { getUserID, userNotFound } from './user';
 import { CreateUser } from '../types/user';
+import { ConversationStart } from '../types/conversation';
 import {
   companionIdentity,
-  stopConversation as stopCommunication,
+  stopConversation,
+  findPartners,
+  startConversation,
 } from '../store/conversation';
-import { getUserByID, stopSearching } from '../store/user';
+import { getUserByID, stopSearching, startSearching } from '../store/user';
 
 export const getCompanionIdentity = async (
   user: CreateUser
@@ -33,7 +36,7 @@ export const stop = async (user: CreateUser): Promise<string> => {
   }
 
   if (await companionIdentity(userID)) {
-    if (await stopCommunication(userID)) {
+    if (await stopConversation(userID)) {
       return 'Conversation stopped🔌';
     } else {
       return 'Can not stop conversation🔌';
@@ -51,4 +54,49 @@ export const stop = async (user: CreateUser): Promise<string> => {
   }
 
   return 'You are not in search🔍';
+};
+
+export const findCompanion = async (
+  user: CreateUser
+): Promise<ConversationStart> => {
+  const userID = await getUserID(user);
+  if (!userID) {
+    return { authorMessage: userNotFound };
+  }
+
+  if (await companionIdentity(userID)) {
+    return { authorMessage: 'You are already in conversation🔌' };
+  }
+
+  const userData = await getUserByID(userID);
+  if (!userData) {
+    return { authorMessage: userNotFound };
+  }
+  if (userData.isSearching) {
+    return { authorMessage: 'You are already searching🔍' };
+  }
+
+  const partners = await findPartners(userID);
+  if (partners.length) {
+    const partner = partners[Math.floor(Math.random() * partners.length)];
+    await stopSearching(partner);
+    await startConversation(userID, partner);
+
+    const partnerIdentity = await getUserByID(partner);
+    if (!partnerIdentity) {
+      return { authorMessage: userNotFound };
+    }
+
+    return {
+      authorMessage: await getCompanionIdentity(user),
+      participantMessage: await getCompanionIdentity(partnerIdentity),
+      participantChatID: Number(partnerIdentity.chatID),
+    };
+  }
+
+  if (!(await startSearching(userID))) {
+    return { authorMessage: 'Can not start search🔍' };
+  }
+
+  return { authorMessage: 'Search started🔍' };
 };

@@ -45,3 +45,46 @@ export const stopConversation = async (userID: number): Promise<boolean> => {
     return false;
   }
 };
+
+export async function startConversation(
+  user1ID: number,
+  user2ID: number
+): Promise<boolean> {
+  try {
+    const res = await pool.query(
+      `INSERT INTO conversation (is_ended) VALUES (FALSE) RETURNING id;`
+    );
+    const conversationID = res.rows[0].id;
+
+    await pool.query(
+      'INSERT INTO conversation_participants (conversation_id, participant) VALUES ($1, $2);',
+      [conversationID, user1ID]
+    );
+    await pool.query(
+      'INSERT INTO conversation_participants (conversation_id, participant) VALUES ($1, $2);',
+      [conversationID, user2ID]
+    );
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export async function findPartners(userID: number): Promise<number[]> {
+  try {
+    const res = await pool.query(
+      `SELECT users.id
+       FROM users
+                JOIN block_list bl on users.id = bl.blocked_user_id
+       WHERE is_searching
+         AND users.id NOT IN (SELECT blocked_user_id
+                              FROM block_list
+                              WHERE list_author = 1)
+         AND bl.blocked_user_id <> 1;`,
+      [userID]
+    );
+    return res.rows.map(row => row.id);
+  } catch {
+    return [];
+  }
+}
