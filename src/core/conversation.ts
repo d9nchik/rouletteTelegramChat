@@ -1,11 +1,13 @@
 import { getUserID, userNotFound } from './user';
 import { CreateUser } from '../types/user';
-import { ConversationStart } from '../types/conversation';
+import { ConversationMessage } from '../types/conversation';
 import {
   companionIdentity,
   stopConversation,
   findPartners,
   startConversation,
+  addLogMessage,
+  conversationChatID,
 } from '../store/conversation';
 import { getUserByID, stopSearching, startSearching } from '../store/user';
 
@@ -58,7 +60,7 @@ export const stop = async (user: CreateUser): Promise<string> => {
 
 export const findCompanion = async (
   user: CreateUser
-): Promise<ConversationStart> => {
+): Promise<ConversationMessage> => {
   const userID = await getUserID(user);
   if (!userID) {
     return { authorMessage: userNotFound };
@@ -90,7 +92,7 @@ export const findCompanion = async (
     return {
       authorMessage: await getCompanionIdentity(user),
       participantMessage: await getCompanionIdentity(partnerIdentity),
-      participantChatID: Number(partnerIdentity.chatID),
+      participantChatID: partnerIdentity.chatID,
     };
   }
 
@@ -99,4 +101,34 @@ export const findCompanion = async (
   }
 
   return { authorMessage: 'Search started🔍' };
+};
+
+export const sendMessage = async (
+  user: CreateUser,
+  message: string
+): Promise<ConversationMessage> => {
+  const userID = await getUserID(user);
+  if (!userID) {
+    return { authorMessage: userNotFound };
+  }
+
+  const conversationChat = await conversationChatID(userID);
+  if (!conversationChat) {
+    return { authorMessage: 'You are not in conversation🔌' };
+  }
+
+  if (!(await addLogMessage(userID, conversationChat, message))) {
+    return { authorMessage: 'Can not send message🔍' };
+  }
+
+  const partnerIdentity = await companionIdentity(userID);
+  if (!partnerIdentity) {
+    return { authorMessage: 'You are not in conversation🔌' };
+  }
+
+  return {
+    authorMessage: 'Delivered📩',
+    participantMessage: message,
+    participantChatID: String(conversationChat),
+  };
 };

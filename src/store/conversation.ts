@@ -28,6 +28,28 @@ export const companionIdentity = async (
   }
 };
 
+export const conversationChatID = async (
+  userID: number
+): Promise<number | null> => {
+  try {
+    const res = await pool.query(
+      `SELECT c.id
+       FROM conversation_participants cp
+                JOIN conversation c on c.id = cp.conversation_id
+       WHERE (NOT c.is_ended)
+         AND participant = $1`,
+      [userID]
+    );
+    if (res.rows.length === 0) {
+      return null;
+    }
+
+    return res.rows[0].id;
+  } catch {
+    return null;
+  }
+};
+
 export const stopConversation = async (userID: number): Promise<boolean> => {
   try {
     await pool.query(
@@ -86,5 +108,21 @@ export async function findPartners(userID: number): Promise<number[]> {
     return res.rows.map(row => row.id);
   } catch {
     return [];
+  }
+}
+
+export async function addLogMessage(
+  sender: number,
+  conversation_id: number,
+  message: string
+): Promise<boolean> {
+  try {
+    await pool.query(
+      `INSERT INTO logs (conversation_id, sender, message) VALUES ($1, $2, $3);`,
+      [conversation_id, sender, message]
+    );
+    return true;
+  } catch {
+    return false;
   }
 }
