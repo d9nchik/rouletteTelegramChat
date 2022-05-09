@@ -9,7 +9,14 @@ import {
   addLogMessage,
   conversationChatID,
 } from '../store/conversation';
-import { getUserByID, stopSearching, startSearching } from '../store/user';
+import {
+  getUserByID,
+  stopSearching,
+  startSearching,
+  blockUser,
+} from '../store/user';
+
+const notInConversation = 'You are not in conversation🕵️';
 
 export const getCompanionIdentity = async (
   user: CreateUser
@@ -21,7 +28,7 @@ export const getCompanionIdentity = async (
 
   const userData = await companionIdentity(userID);
   if (!userData) {
-    return 'You are not in conversation🕵️';
+    return notInConversation;
   }
 
   return `Fake name🎭: ${userData.fakeName}\nAge👴: ${
@@ -31,17 +38,22 @@ export const getCompanionIdentity = async (
   }\nIn search🔎: ${userData.isSearching ? '✅' : '❌'}`;
 };
 
-export const stop = async (user: CreateUser): Promise<string> => {
+export const stop = async (user: CreateUser): Promise<ConversationMessage> => {
   const userID = await getUserID(user);
   if (!userID) {
-    return userNotFound;
+    return { authorMessage: userNotFound };
   }
 
-  if (await companionIdentity(userID)) {
+  const companion = await companionIdentity(userID);
+  if (companion) {
     if (await stopConversation(userID)) {
-      return 'Conversation stopped🔌';
+      return {
+        authorMessage: 'Conversation stopped🔌',
+        participantMessage: 'Conversation stopped🔌',
+        participantChatID: companion.chatID,
+      };
     } else {
-      return 'Can not stop conversation🔌';
+      return { authorMessage: 'Can not stop conversation🔌' };
     }
   }
 
@@ -49,13 +61,13 @@ export const stop = async (user: CreateUser): Promise<string> => {
 
   if (userData && userData.isSearching) {
     if (await stopSearching(userID)) {
-      return 'Search stopped🔌';
+      return { authorMessage: 'Search stopped🔌' };
     } else {
-      return 'Can not stop search🔌';
+      return { authorMessage: 'Can not stop search🔌' };
     }
   }
 
-  return 'You are not in search🔍';
+  return { authorMessage: 'You are not in search🔍' };
 };
 
 export const findCompanion = async (
@@ -114,7 +126,7 @@ export const sendMessage = async (
 
   const conversationChat = await conversationChatID(userID);
   if (!conversationChat) {
-    return { authorMessage: 'You are not in conversation🔌' };
+    return { authorMessage: notInConversation };
   }
 
   if (!(await addLogMessage(userID, conversationChat, message))) {
@@ -123,12 +135,40 @@ export const sendMessage = async (
 
   const partnerIdentity = await companionIdentity(userID);
   if (!partnerIdentity) {
-    return { authorMessage: 'You are not in conversation🔌' };
+    return { authorMessage: notInConversation };
   }
 
   return {
     authorMessage: 'Delivered📩',
     participantMessage: message,
     participantChatID: String(conversationChat),
+  };
+};
+
+export const blockCompanion = async (
+  user: CreateUser
+): Promise<ConversationMessage> => {
+  const userID = await getUserID(user);
+  if (!userID) {
+    return { authorMessage: userNotFound };
+  }
+
+  const companion = await companionIdentity(userID);
+  if (!companion) {
+    return { authorMessage: notInConversation };
+  }
+
+  if (!(await blockUser(userID, companion.id))) {
+    return { authorMessage: 'Can not block user🔍' };
+  }
+
+  if (!(await stopConversation(userID))) {
+    return { authorMessage: 'Can not stop conversation🔌' };
+  }
+
+  return {
+    authorMessage: 'User blocked🔕',
+    participantMessage: `You're blocked🔕`,
+    participantChatID: companion.chatID,
   };
 };
