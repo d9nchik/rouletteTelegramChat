@@ -11,7 +11,7 @@ import {
   randomIdentity,
   isUserBanned,
 } from './user';
-import { getCompanionIdentity, stop } from './conversation';
+import { getCompanionIdentity, stop, findCompanion } from './conversation';
 import { ban } from './admin';
 import { CreateUser } from '../types/user';
 import { Context, Telegraf } from 'telegraf';
@@ -176,6 +176,23 @@ We will ban you if you provide:
     )
   );
 
+  bot.command('find_companion', async ctx =>
+    ctx.reply(
+      await insureChatIsPrivateAndUserIsNotBannedWithCreateUser(
+        ctx.chat,
+        async createUser => {
+          const res = await findCompanion(createUser);
+
+          if (res.participantChatID && res.participantMessage) {
+            ctx.tg.sendMessage(res.participantChatID, res.participantMessage);
+          }
+
+          return res.authorMessage;
+        }
+      )
+    )
+  );
+
   // Admin
   bot.command('ban', async ctx =>
     ctx.replyWithMarkdown(
@@ -204,7 +221,7 @@ async function insureChatIsPrivate(
 
 function getCreateUser(chat: Chat.PrivateChat): CreateUser {
   return {
-    chatID: chat.id,
+    chatID: `${chat.id}`,
     userName: chat.username ?? '',
     fakeName: generateName(),
     age: generateAge(),

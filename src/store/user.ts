@@ -20,7 +20,7 @@ export async function createUser({
 }
 
 export async function getUserIDByChatId(
-  chatID: number
+  chatID: string
 ): Promise<number | null> {
   try {
     const res = await pool.query('SELECT id FROM users WHERE chat_id=$1;', [
@@ -104,9 +104,19 @@ export async function setAge(userID: number, age: number): Promise<boolean> {
   }
 }
 
-export async function stopSearching(userID: number): Promise<boolean> {
+export const stopSearching = async (userID: number): Promise<boolean> =>
+  setSearching(userID, false);
+
+export const startSearching = async (userID: number): Promise<boolean> =>
+  setSearching(userID, true);
+
+async function setSearching(
+  userID: number,
+  isSearching: boolean
+): Promise<boolean> {
   try {
-    await pool.query('UPDATE users SET is_searching=FALSE WHERE id=$1;', [
+    await pool.query('UPDATE users SET is_searching=$1 WHERE id=$2;', [
+      isSearching,
       userID,
     ]);
     return true;

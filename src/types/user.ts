@@ -1,5 +1,5 @@
 export interface CreateUser {
-  chatID: number;
+  chatID: string;
   userName: string;
   fakeName: string;
   age: number;
@@ -7,7 +7,7 @@ export interface CreateUser {
 
 export interface User {
   id: number;
-  chatID: number;
+  chatID: string;
   userName: string;
   fakeName: string;
   age: number;
