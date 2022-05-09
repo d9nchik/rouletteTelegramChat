@@ -136,3 +136,18 @@ export async function userRoles(userID: number): Promise<UserRole[]> {
     return [];
   }
 }
+
+export async function blockUser(
+  authorID: number,
+  userID: number
+): Promise<boolean> {
+  try {
+    await pool.query(
+      'INSERT INTO block_list (list_author, blocked_user_id) VALUES ($1, $2);',
+      [authorID, userID]
+    );
+    return true;
+  } catch {
+    return false;
+  }
+}

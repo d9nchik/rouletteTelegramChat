@@ -16,6 +16,7 @@ import {
   stop,
   findCompanion,
   sendMessage,
+  blockCompanion,
 } from './conversation';
 import { ban } from './admin';
 import { CreateUser } from '../types/user';
@@ -177,7 +178,18 @@ We will ban you if you provide:
 
   bot.command('stop', async ctx =>
     ctx.reply(
-      await insureChatIsPrivateAndUserIsNotBannedWithCreateUser(ctx.chat, stop)
+      await insureChatIsPrivateAndUserIsNotBannedWithCreateUser(
+        ctx.chat,
+        async createUser => {
+          const res = await stop(createUser);
+
+          if (res.participantChatID && res.participantMessage) {
+            ctx.tg.sendMessage(res.participantChatID, res.participantMessage);
+          }
+
+          return res.authorMessage;
+        }
+      )
     )
   );
 
@@ -188,6 +200,22 @@ We will ban you if you provide:
         async createUser => {
           const res = await findCompanion(createUser);
 
+          if (res.participantChatID && res.participantMessage) {
+            ctx.tg.sendMessage(res.participantChatID, res.participantMessage);
+          }
+
+          return res.authorMessage;
+        }
+      )
+    )
+  );
+
+  bot.command('block', async ctx =>
+    ctx.reply(
+      await insureChatIsPrivateAndUserIsNotBannedWithCreateUser(
+        ctx.chat,
+        async createUser => {
+          const res = await blockCompanion(createUser);
           if (res.participantChatID && res.participantMessage) {
             ctx.tg.sendMessage(res.participantChatID, res.participantMessage);
           }
