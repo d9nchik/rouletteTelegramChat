@@ -1,4 +1,4 @@
-import { userRoles } from '../store/user';
+import { stopSearching, userRoles } from '../store/user';
 import { banUser } from '../store/admin';
 import { UserRole, CreateUser } from '../types/user';
 import { getUserID } from './user';
@@ -15,6 +15,10 @@ export const ban = async (
   }
   if ((await userRoles(userID)).includes(UserRole.banned)) {
     return 'User is already banned😉';
+  }
+
+  if (!(await stopSearching(userID))) {
+    return 'Can not stop searching🔍';
   }
 
   return (await banUser(userID)) ? 'User banned✅' : 'Can not ban user🤷';
