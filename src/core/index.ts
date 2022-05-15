@@ -10,6 +10,7 @@ import {
   updateAge,
   randomIdentity,
   isUserBanned,
+  randomAdmin,
 } from './user';
 import {
   getCompanionIdentity,
@@ -17,6 +18,7 @@ import {
   findCompanion,
   sendMessage,
   blockCompanion,
+  reportCompanion,
 } from './conversation';
 import { ban, userHistory } from './admin';
 import { CreateUser } from '../types/user';
@@ -223,6 +225,26 @@ We will ban you if you provide:
           const res = await blockCompanion(createUser);
           if (res.participantChatID && res.participantMessage) {
             ctx.tg.sendMessage(res.participantChatID, res.participantMessage);
+          }
+
+          return res.authorMessage;
+        }
+      )
+    )
+  );
+
+  bot.command('report', async ctx =>
+    ctx.reply(
+      await insureChatIsPrivateAndUserIsNotBannedWithCreateUser(
+        ctx.chat,
+        async createUser => {
+          const res = await reportCompanion(createUser);
+          if (res.participantChatID && res.participantMessage) {
+            ctx.tg.sendMessage(res.participantChatID, res.participantMessage);
+          }
+
+          if (res.adminMessage) {
+            ctx.tg.sendMessage(await randomAdmin(), res.adminMessage);
           }
 
           return res.authorMessage;

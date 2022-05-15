@@ -7,6 +7,7 @@ import {
   setFilms,
   setAge,
   userRoles,
+  getAdminsIDs,
 } from '../store/user';
 import { CreateUser, UserRole } from '../types/user';
 import {
@@ -122,4 +123,9 @@ export const isUserBanned = async (user: CreateUser): Promise<boolean> => {
 
   const roles = await userRoles(userID);
   return roles.includes(UserRole.banned);
+};
+
+export const randomAdmin = async (): Promise<number> => {
+  const admins = await getAdminsIDs();
+  return admins[Math.floor(Math.random() * admins.length)];
 };

@@ -151,3 +151,15 @@ export async function blockUser(
     return false;
   }
 }
+
+export const getAdminsIDs = async (): Promise<number[]> => {
+  try {
+    const res = await pool.query(
+      'SELECT u.chat_id FROM user_roles ur JOIN users u ON u.id=ur.user_id WHERE ur.assigned_role = $1;',
+      [UserRole.admin]
+    );
+    return res.rows.map(row => row.chat_id);
+  } catch {
+    return [];
+  }
+};
