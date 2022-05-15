@@ -18,9 +18,14 @@ import {
   sendMessage,
   blockCompanion,
 } from './conversation';
-import { ban } from './admin';
+import { ban, userHistory } from './admin';
 import { CreateUser } from '../types/user';
 import { Context, Telegraf } from 'telegraf';
+import { writeFile as wf, unlink } from 'fs';
+import { promisify } from 'util';
+
+const writeFile = promisify(wf);
+const deleteFile = promisify(unlink);
 
 function registerHandlersOnBot(bot: Telegraf<Context<Update>>) {
   bot.start(async ctx =>
@@ -226,6 +231,48 @@ We will ban you if you provide:
     )
   );
 
+  // Admin
+  bot.command('ban', async ctx =>
+    ctx.replyWithMarkdown(
+      await insureChatIsPrivateAndUserIsNotBanned(ctx.chat, async chat => {
+        const parts = ctx.message.text.split(' ');
+        if (parts.length != 2 || Number.isNaN(Number(parts[1]))) {
+          return `Usage: \`/ban <user_id>\``;
+        }
+
+        return ban(getCreateUser(chat), Number(parts[1]));
+      })
+    )
+  );
+
+  bot.command('user_logs', async ctx =>
+    ctx.replyWithMarkdown(
+      await insureChatIsPrivateAndUserIsNotBanned(ctx.chat, async chat => {
+        const parts = ctx.message.text.split(' ');
+        if (parts.length != 2 || Number.isNaN(Number(parts[1]))) {
+          return `Usage: \`/user_logs <user_id>\``;
+        }
+
+        const data = await writeStringToFile(
+          await userHistory(getCreateUser(chat), Number(parts[1]))
+        );
+
+        ctx.telegram
+          .sendDocument(ctx.from.id, {
+            source: data,
+            filename: `${Number(parts[1])}.txt`,
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+
+        return `User history has been sent to you.`;
+      })
+    )
+  );
+
+  // Send message
+
   bot.on('text', async ctx =>
     ctx.reply(
       await insureChatIsPrivateAndUserIsNotBannedWithCreateUser(
@@ -240,20 +287,6 @@ We will ban you if you provide:
           return res.authorMessage;
         }
       )
-    )
-  );
-
-  // Admin
-  bot.command('ban', async ctx =>
-    ctx.replyWithMarkdown(
-      await insureChatIsPrivateAndUserIsNotBanned(ctx.chat, async chat => {
-        const parts = ctx.message.text.split(' ');
-        if (parts.length != 2 || Number.isNaN(Number(parts[1]))) {
-          return `Usage: \`/ban <user_id>\``;
-        }
-
-        return ban(getCreateUser(chat), Number(parts[1]));
-      })
     )
   );
 }
@@ -301,5 +334,16 @@ const insureChatIsPrivateAndUserIsNotBannedWithCreateUser = (
   insureChatIsPrivateAndUserIsNotBanned(chat, async chat =>
     fn(getCreateUser(chat))
   );
+
+async function writeStringToFile(str: string): Promise<string> {
+  const name = `/tmp/${new Date().toISOString()}.txt`;
+  await writeFile(name, str);
+
+  setTimeout(() => {
+    deleteFile(name);
+  }, 1000 * 60 * 5);
+
+  return name;
+}
 
 export default registerHandlersOnBot;
