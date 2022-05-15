@@ -15,8 +15,10 @@ import {
   startSearching,
   blockUser,
 } from '../store/user';
+import { NotiFyAdminMessage } from '../types/admin';
 
 const notInConversation = 'You are not in conversation🕵️';
+const canNotStopConversation = 'Can not stop conversation🔌';
 
 export const getCompanionIdentity = async (
   user: CreateUser
@@ -53,7 +55,7 @@ export const stop = async (user: CreateUser): Promise<ConversationMessage> => {
         participantChatID: companion.chatID,
       };
     } else {
-      return { authorMessage: 'Can not stop conversation🔌' };
+      return { authorMessage: canNotStopConversation };
     }
   }
 
@@ -163,12 +165,41 @@ export const blockCompanion = async (
   }
 
   if (!(await stopConversation(userID))) {
-    return { authorMessage: 'Can not stop conversation🔌' };
+    return { authorMessage: canNotStopConversation };
   }
 
   return {
     authorMessage: 'User blocked🔕',
     participantMessage: `You're blocked🔕`,
     participantChatID: companion.chatID,
+  };
+};
+
+export const reportCompanion = async (
+  user: CreateUser
+): Promise<NotiFyAdminMessage> => {
+  const userID = await getUserID(user);
+  if (!userID) {
+    return { authorMessage: userNotFound };
+  }
+
+  const companion = await companionIdentity(userID);
+  if (!companion) {
+    return { authorMessage: notInConversation };
+  }
+
+  if (!(await blockUser(userID, companion.id))) {
+    return { authorMessage: 'Can not block user🔍' };
+  }
+
+  if (!(await stopConversation(userID))) {
+    return { authorMessage: canNotStopConversation };
+  }
+
+  return {
+    authorMessage: 'User blocked🔕',
+    participantMessage: `You're blocked🔕`,
+    participantChatID: companion.chatID,
+    adminMessage: `${companion.id} has action of ban.\nToo see conversation enter: /user_logs ${companion.id}`,
   };
 };
