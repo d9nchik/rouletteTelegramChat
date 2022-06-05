@@ -32,7 +32,7 @@ const deleteFile = promisify(unlink);
 function registerHandlersOnBot(bot: Telegraf<Context<Update>>) {
   bot.start(async ctx =>
     ctx.reply(
-      await insureChatIsPrivateAndUserIsNotBannedWithCreateUser(
+      await ensureChatIsPrivateAndUserIsNotBannedWithCreateUser(
         ctx.chat,
         async createUser => {
           await getUserID(createUser);
@@ -44,7 +44,7 @@ function registerHandlersOnBot(bot: Telegraf<Context<Update>>) {
 
   bot.command('help', async ctx =>
     ctx.reply(
-      await insureChatIsPrivateAndUserIsNotBanned(
+      await ensureChatIsPrivateAndUserIsNotBanned(
         ctx.chat,
         async () =>
           `Commands:
@@ -76,7 +76,7 @@ We will ban you if you provide:
 
   bot.command('my_identity', async ctx =>
     ctx.reply(
-      await insureChatIsPrivateAndUserIsNotBannedWithCreateUser(
+      await ensureChatIsPrivateAndUserIsNotBannedWithCreateUser(
         ctx.chat,
         getUserStatus
       )
@@ -85,7 +85,7 @@ We will ban you if you provide:
 
   bot.command('set_name', async ctx =>
     ctx.replyWithMarkdown(
-      await insureChatIsPrivateAndUserIsNotBannedWithCreateUser(
+      await ensureChatIsPrivateAndUserIsNotBannedWithCreateUser(
         ctx.chat,
         async createUser => {
           const parts = ctx.message.text.split(' ');
@@ -105,7 +105,7 @@ We will ban you if you provide:
 
   bot.command('set_hobbies', async ctx =>
     ctx.replyWithMarkdown(
-      await insureChatIsPrivateAndUserIsNotBannedWithCreateUser(
+      await ensureChatIsPrivateAndUserIsNotBannedWithCreateUser(
         ctx.chat,
         async createUser => {
           const parts = ctx.message.text.split(' ');
@@ -126,7 +126,7 @@ We will ban you if you provide:
 
   bot.command('set_films', async ctx =>
     ctx.replyWithMarkdown(
-      await insureChatIsPrivateAndUserIsNotBannedWithCreateUser(
+      await ensureChatIsPrivateAndUserIsNotBannedWithCreateUser(
         ctx.chat,
         async crateUser => {
           const parts = ctx.message.text.split(' ');
@@ -147,7 +147,7 @@ We will ban you if you provide:
 
   bot.command('set_age', async ctx =>
     ctx.replyWithMarkdown(
-      await insureChatIsPrivateAndUserIsNotBannedWithCreateUser(
+      await ensureChatIsPrivateAndUserIsNotBannedWithCreateUser(
         ctx.chat,
         async crateUser => {
           const parts = ctx.message.text.split(' ');
@@ -167,7 +167,7 @@ We will ban you if you provide:
 
   bot.command('random_identity', async ctx =>
     ctx.replyWithMarkdown(
-      await insureChatIsPrivateAndUserIsNotBannedWithCreateUser(
+      await ensureChatIsPrivateAndUserIsNotBannedWithCreateUser(
         ctx.chat,
         randomIdentity
       )
@@ -176,7 +176,7 @@ We will ban you if you provide:
 
   bot.command('companion_identity', async ctx =>
     ctx.reply(
-      await insureChatIsPrivateAndUserIsNotBannedWithCreateUser(
+      await ensureChatIsPrivateAndUserIsNotBannedWithCreateUser(
         ctx.chat,
         getCompanionIdentity
       )
@@ -185,7 +185,7 @@ We will ban you if you provide:
 
   bot.command('stop', async ctx =>
     ctx.reply(
-      await insureChatIsPrivateAndUserIsNotBannedWithCreateUser(
+      await ensureChatIsPrivateAndUserIsNotBannedWithCreateUser(
         ctx.chat,
         async createUser => {
           const res = await stop(createUser);
@@ -202,7 +202,7 @@ We will ban you if you provide:
 
   bot.command('find_companion', async ctx =>
     ctx.reply(
-      await insureChatIsPrivateAndUserIsNotBannedWithCreateUser(
+      await ensureChatIsPrivateAndUserIsNotBannedWithCreateUser(
         ctx.chat,
         async createUser => {
           const res = await findCompanion(createUser);
@@ -219,7 +219,7 @@ We will ban you if you provide:
 
   bot.command('block', async ctx =>
     ctx.reply(
-      await insureChatIsPrivateAndUserIsNotBannedWithCreateUser(
+      await ensureChatIsPrivateAndUserIsNotBannedWithCreateUser(
         ctx.chat,
         async createUser => {
           const res = await blockCompanion(createUser);
@@ -235,7 +235,7 @@ We will ban you if you provide:
 
   bot.command('report', async ctx =>
     ctx.reply(
-      await insureChatIsPrivateAndUserIsNotBannedWithCreateUser(
+      await ensureChatIsPrivateAndUserIsNotBannedWithCreateUser(
         ctx.chat,
         async createUser => {
           const res = await reportCompanion(createUser);
@@ -256,7 +256,7 @@ We will ban you if you provide:
   // Admin
   bot.command('ban', async ctx =>
     ctx.replyWithMarkdown(
-      await insureChatIsPrivateAndUserIsNotBanned(ctx.chat, async chat => {
+      await ensureChatIsPrivateAndUserIsNotBanned(ctx.chat, async chat => {
         const parts = ctx.message.text.split(' ');
         if (parts.length != 2 || Number.isNaN(Number(parts[1]))) {
           return `Usage: \`/ban <user_id>\``;
@@ -269,7 +269,7 @@ We will ban you if you provide:
 
   bot.command('user_logs', async ctx =>
     ctx.replyWithMarkdown(
-      await insureChatIsPrivateAndUserIsNotBanned(ctx.chat, async chat => {
+      await ensureChatIsPrivateAndUserIsNotBanned(ctx.chat, async chat => {
         const parts = ctx.message.text.split(' ');
         if (parts.length != 2 || Number.isNaN(Number(parts[1]))) {
           return `Usage: \`/user_logs <user_id>\``;
@@ -297,7 +297,7 @@ We will ban you if you provide:
 
   bot.on('text', async ctx =>
     ctx.reply(
-      await insureChatIsPrivateAndUserIsNotBannedWithCreateUser(
+      await ensureChatIsPrivateAndUserIsNotBannedWithCreateUser(
         ctx.chat,
         async createUser => {
           const res = await sendMessage(createUser, ctx.message.text);
@@ -313,7 +313,7 @@ We will ban you if you provide:
   );
 }
 
-async function insureChatIsPrivate(
+async function ensureChatIsPrivate(
   chat: Chat.PrivateChat | Chat.GroupChat | Chat.SupergroupChat,
   fn: (chat: Chat.PrivateChat) => Promise<string>
 ): Promise<string> {
@@ -344,16 +344,16 @@ async function checkIsUserBanned(
   return fn(chat);
 }
 
-const insureChatIsPrivateAndUserIsNotBanned = (
+const ensureChatIsPrivateAndUserIsNotBanned = (
   chat: Chat.PrivateChat | Chat.GroupChat | Chat.SupergroupChat,
   fn: (chat: Chat.PrivateChat) => Promise<string>
-) => insureChatIsPrivate(chat, async chat => checkIsUserBanned(chat, fn));
+) => ensureChatIsPrivate(chat, async chat => checkIsUserBanned(chat, fn));
 
-const insureChatIsPrivateAndUserIsNotBannedWithCreateUser = (
+const ensureChatIsPrivateAndUserIsNotBannedWithCreateUser = (
   chat: Chat.PrivateChat | Chat.GroupChat | Chat.SupergroupChat,
   fn: (u: CreateUser) => Promise<string>
 ) =>
-  insureChatIsPrivateAndUserIsNotBanned(chat, async chat =>
+  ensureChatIsPrivateAndUserIsNotBanned(chat, async chat =>
     fn(getCreateUser(chat))
   );
 
