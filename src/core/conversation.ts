@@ -16,9 +16,11 @@ import {
   blockUser,
 } from '../store/user';
 import { NotiFyAdminMessage } from '../types/admin';
+import { tryBanBySentiment } from './admin';
 
 const notInConversation = 'You are not in conversation🕵️';
 const canNotStopConversation = 'Can not stop conversation🔌';
+const userBlockedMessage = 'User blocked🔕';
 
 export const getCompanionIdentity = async (
   user: CreateUser
@@ -169,7 +171,7 @@ export const blockCompanion = async (
   }
 
   return {
-    authorMessage: 'User blocked🔕',
+    authorMessage: userBlockedMessage,
     participantMessage: `You're blocked🔕`,
     participantChatID: companion.chatID,
   };
@@ -196,8 +198,16 @@ export const reportCompanion = async (
     return { authorMessage: canNotStopConversation };
   }
 
+  if (await tryBanBySentiment(companion.id)) {
+    return {
+      authorMessage: userBlockedMessage,
+      participantMessage: `You're blocked🔕`,
+      participantChatID: companion.chatID,
+    };
+  }
+
   return {
-    authorMessage: 'User blocked🔕',
+    authorMessage: userBlockedMessage,
     participantMessage: `You're blocked🔕`,
     participantChatID: companion.chatID,
     adminMessage: `${companion.id} has action of ban.\nToo see conversation enter: /user_logs ${companion.id}`,

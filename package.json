@@ -38,6 +38,7 @@
   "devDependencies": {
     "@types/node": "^17.0.26",
     "@types/pg": "^8.6.5",
+    "@types/sentiment": "^5.0.1",
     "@typescript-eslint/eslint-plugin": "^5.19.0",
     "@typescript-eslint/parser": "^5.19.0",
     "eslint": "^8.13.0",
@@ -52,6 +53,7 @@
   "dependencies": {
     "dotenv": "^16.0.0",
     "pg": "^8.7.3",
+    "sentiment": "^5.0.2",
     "telegraf": "^4.7.0",
     "unique-names-generator": "^4.7.1"
   }
