@@ -262,7 +262,12 @@ We will ban you if you provide:
           return `Usage: \`/ban <user_id>\``;
         }
 
-        return ban(getCreateUser(chat), Number(parts[1]));
+        try {
+          return ban(getCreateUser(chat), Number(parts[1]));
+        } catch (e) {
+          console.error(e);
+          return `Sorry, I couldn't ban that user.`;
+        }
       })
     )
   );
