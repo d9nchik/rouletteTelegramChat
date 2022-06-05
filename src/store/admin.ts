@@ -37,3 +37,26 @@ export const getUserHistory = async (userID: number): Promise<Message[]> => {
     return [];
   }
 };
+
+export const getUserLastMessages = async (
+  userID: number
+): Promise<string[]> => {
+  try {
+    const res = await pool.query(
+      `WITH user_conversations AS (SELECT c.id
+                                   FROM conversation_participants cp
+                                            JOIN conversation c on cp.conversation_id = c.id
+                                   WHERE participant = $1)
+       SELECT message
+       FROM logs
+                RIGHT JOIN user_conversations uc ON uc.id = logs.conversation_id
+       WHERE sender = $1
+       ORDER BY logs.id DESC
+       LIMIT 1000;`,
+      [userID]
+    );
+    return res.rows.map(row => row.message);
+  } catch {
+    return [];
+  }
+};
