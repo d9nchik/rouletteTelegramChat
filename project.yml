@@ -1,0 +1,12 @@
+packages:
+  - name: sample
+    actions:
+      - name: bot
+        runtime: 'nodejs:default'
+        limits:
+          timeout: 5000
+          memory: 256
+        source:
+environment:
+  DB_STRING: ${DB_STRING}
+  BOT_TOKEN: ${BOT_TOKEN}

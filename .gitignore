@@ -2,3 +2,10 @@ node_modules
 .husky/_
 .env
 build
+
+.nimbella
+__deployer__.zip
+__pycache__/
+node_modules
+.DS_Store
+packages

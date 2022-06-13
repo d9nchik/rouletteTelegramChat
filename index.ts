@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import { Telegraf } from 'telegraf';
+import { Update } from 'telegraf/typings/core/types/typegram';
 import registerHandlers from './src/core';
 
 const token = process.env.BOT_TOKEN;
@@ -12,9 +13,6 @@ const bot = new Telegraf(token);
 
 registerHandlers(bot);
 
-bot.help(ctx => ctx.reply('Send me a sticker'));
-bot.launch();
-
-// Enable graceful stop
-process.once('SIGINT', () => bot.stop('SIGINT'));
-process.once('SIGTERM', () => bot.stop('SIGTERM'));
+export async function main(args: Update) {
+  return await bot.handleUpdate(args);
+}
