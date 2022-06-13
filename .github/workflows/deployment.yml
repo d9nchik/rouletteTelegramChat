@@ -1,7 +1,7 @@
 # This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
-name: Node.js CI
+name: Functions Deployment
 
 on:
   push:
@@ -27,6 +27,8 @@ jobs:
         uses: digitalocean/action-doctl@v2
         with:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+      - run: doctl sandbox install
+      - run: doctl sandbox connect
       - run: export BOT_TOKEN=${{ secrets.BOT_TOKEN }}
       - run: export DB_STRING=${{ secrets.DB_STRING }}
       - run: npm run build-prepare
