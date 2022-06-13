@@ -5,7 +5,7 @@ name: Functions Deployment
 
 on:
   push:
-    branches: [db-implementation]
+    branches: [master]
 
 jobs:
   build:
