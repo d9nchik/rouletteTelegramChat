@@ -29,7 +29,6 @@ jobs:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
       - run: doctl sandbox install
       - run: doctl sandbox connect
-      - run: export BOT_TOKEN=${{ secrets.BOT_TOKEN }}
-      - run: export DB_STRING=${{ secrets.DB_STRING }}
+      - run: ${{ secrets.FUNCTIONS_ENV}} > .env
       - run: npm run build-prepare
       - run: doctl serverless deploy .
