@@ -29,6 +29,6 @@ jobs:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
       - run: doctl sandbox install
       - run: doctl sandbox connect
-      - run: ${{ secrets.FUNCTIONS_ENV}} > .env
+      - run: echo "${{ secrets.FUNCTIONS_ENV}}" >> .env
       - run: npm run build-prepare
       - run: doctl serverless deploy .
