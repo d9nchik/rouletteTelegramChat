@@ -92,6 +92,8 @@ We will use Node.JS [sentiment library](https://github.com/thisandagain/sentimen
 
 ## Development
 
+After installation don't forget to run `husky install`
+
 ### Migrations
 
 To apply migrations you need to run

@@ -14,7 +14,8 @@ export async function createUser({
       [chatID, userName, fakeName, age]
     );
     return res.rows[0].id;
-  } catch {
+  } catch (err) {
+    console.error(err);
     return 0;
   }
 }

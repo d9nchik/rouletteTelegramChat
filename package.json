@@ -11,11 +11,11 @@
     "format": "prettier --write .",
     "format:stage": "pretty-quick --staged",
     "check-format": "prettier --check .",
-    "prepare": "husky install",
     "lint": "eslint \"**/*.{t,j}s{x,}\"",
     "lint:write": "eslint --debug src/ --fix",
     "start": "ts-node index.ts",
-    "build": "tsc -p tsconfig.json"
+    "build-prepare": "rm -rf packages && mkdir -p ./packages/sample/bot && cp -rf src index.ts package.json package-lock.json tsconfig.json ./packages/sample/bot",
+    "build": "tsc -p tsconfig.json && rm -rf node_modules && npm ci --omit=dev && rm *.ts"
   },
   "repository": {
     "type": "git",
