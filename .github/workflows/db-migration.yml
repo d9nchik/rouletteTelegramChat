@@ -2,7 +2,7 @@ name: DB migrations
 
 on:
   push:
-    branches: [db-implementation]
+    branches: [master]
 
 jobs:
   build:
