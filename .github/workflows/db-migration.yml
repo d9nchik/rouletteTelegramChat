@@ -1,0 +1,29 @@
+name: DB migrations
+
+on:
+  push:
+    branches: [db-implementation]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: 'npm'
+
+      - name: Get migrate tool
+        run: go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@v4.15.2
+
+      - name: Run migrations
+        run: npm run apply-migration
+        env:
+          DB_STRING: ${{ secrets.DB_STRING }}
