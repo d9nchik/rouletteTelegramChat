@@ -74,7 +74,7 @@ export async function startConversation(
 ): Promise<boolean> {
   try {
     await pool.query('BEGIN');
-    
+
     const res = await pool.query(
       `INSERT INTO conversation (is_ended) VALUES (FALSE) RETURNING id;`
     );
