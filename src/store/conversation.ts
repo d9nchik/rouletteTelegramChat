@@ -73,6 +73,8 @@ export async function startConversation(
   user2ID: number
 ): Promise<boolean> {
   try {
+    await pool.query('BEGIN');
+    
     const res = await pool.query(
       `INSERT INTO conversation (is_ended) VALUES (FALSE) RETURNING id;`
     );
@@ -86,8 +88,11 @@ export async function startConversation(
       'INSERT INTO conversation_participants (conversation_id, participant) VALUES ($1, $2);',
       [conversationID, user2ID]
     );
+    await pool.query('COMMIT');
+
     return true;
   } catch {
+    await pool.query('ROLLBACK');
     return false;
   }
 }
