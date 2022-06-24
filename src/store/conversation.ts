@@ -73,26 +73,37 @@ export async function startConversation(
   user2ID: number
 ): Promise<boolean> {
   try {
-    await pool.query('BEGIN');
+    // You must use the same client instance for all statements within a transaction.
+    // PostgreSQL isolates a transaction to individual clients.
+    // This means if you initialize or use transactions with the pool.query method
+    // you will have problems.Do not use transactions with the pool.query method.
+    const client = await pool.connect();
 
-    const res = await pool.query(
-      `INSERT INTO conversation (is_ended) VALUES (FALSE) RETURNING id;`
-    );
-    const conversationID = res.rows[0].id;
+    try {
+      await client.query('BEGIN');
 
-    await pool.query(
-      'INSERT INTO conversation_participants (conversation_id, participant) VALUES ($1, $2);',
-      [conversationID, user1ID]
-    );
-    await pool.query(
-      'INSERT INTO conversation_participants (conversation_id, participant) VALUES ($1, $2);',
-      [conversationID, user2ID]
-    );
-    await pool.query('COMMIT');
+      const res = await client.query(
+        `INSERT INTO conversation (is_ended) VALUES (FALSE) RETURNING id;`
+      );
+      const conversationID = res.rows[0].id;
 
-    return true;
-  } catch {
-    await pool.query('ROLLBACK');
+      await client.query(
+        'INSERT INTO conversation_participants (conversation_id, participant) VALUES ($1, $2);',
+        [conversationID, user1ID]
+      );
+      await client.query(
+        'INSERT INTO conversation_participants (conversation_id, participant) VALUES ($1, $2);',
+        [conversationID, user2ID]
+      );
+      await client.query('COMMIT');
+
+      return true;
+    } catch {
+      await client.query('ROLLBACK');
+      return false;
+    }
+  } catch (e) {
+    console.log(e);
     return false;
   }
 }
