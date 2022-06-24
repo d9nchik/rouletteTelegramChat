@@ -16,7 +16,8 @@
     "start": "ts-node index.ts",
     "build-prepare": "rm -rf packages && mkdir -p ./packages/sample/bot && cp -rf src index.ts package.json package-lock.json tsconfig.json ./packages/sample/bot",
     "build": "tsc -p tsconfig.json && rm -rf node_modules && npm ci --omit=dev && rm *.ts",
-    "apply-migration": "migrate -path migrations -database $DB_STRING up"
+    "apply-migration": "migrate -path migrations -database $DB_STRING up",
+    "husky-install": "husky install"
   },
   "repository": {
     "type": "git",
