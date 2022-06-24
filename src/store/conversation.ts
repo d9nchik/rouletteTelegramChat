@@ -1,4 +1,4 @@
-import pool from '.';
+import pool, { transaction } from '.';
 import { User } from '../types/user';
 import { getUserByID } from './user';
 
@@ -68,20 +68,12 @@ export const stopConversation = async (userID: number): Promise<boolean> => {
   }
 };
 
-export async function startConversation(
+export const startConversation = async (
   user1ID: number,
   user2ID: number
-): Promise<boolean> {
-  try {
-    // You must use the same client instance for all statements within a transaction.
-    // PostgreSQL isolates a transaction to individual clients.
-    // This means if you initialize or use transactions with the pool.query method
-    // you will have problems.Do not use transactions with the pool.query method.
-    const client = await pool.connect();
-
+): Promise<boolean> =>
+  transaction(async client => {
     try {
-      await client.query('BEGIN');
-
       const res = await client.query(
         `INSERT INTO conversation (is_ended) VALUES (FALSE) RETURNING id;`
       );
@@ -95,18 +87,11 @@ export async function startConversation(
         'INSERT INTO conversation_participants (conversation_id, participant) VALUES ($1, $2);',
         [conversationID, user2ID]
       );
-      await client.query('COMMIT');
-
       return true;
     } catch {
-      await client.query('ROLLBACK');
       return false;
     }
-  } catch (e) {
-    console.log(e);
-    return false;
-  }
-}
+  });
 
 export async function findPartners(userID: number): Promise<number[]> {
   try {
